@@ -43,13 +43,13 @@ const Navbar = () => {
   return (
     <>
       <AppBar
-        position="sticky"
-        sx={{
-          background: "rgba(7, 55, 99, 0.9)",
-          backdropFilter: "blur(6px)",
-          boxShadow: "none",
-          paddingY: 1,
-        }}
+         position="relative"
+  sx={{
+    background: "linear-gradient(to bottom, rgba(4, 15, 17, 0.9), rgba(8, 45, 72, 0.8))",
+    backdropFilter: "blur(8px)",
+    boxShadow: "none",
+    paddingY: 1,
+  }}
       >
         <Toolbar
           sx={{

@@ -26,17 +26,112 @@ const Signup = () => {
     email: "",
     password: "",
   });
+  const [errors, setErrors] = useState({
+    name: "",
+    email: "",
+    password: "",
+  });
+  const [touched, setTouched] = useState({
+    name: false,
+    email: false,
+    password: false,
+  });
+
+  const validateField = (name, value) => {
+    let error = "";
+    
+    switch (name) {
+      case "name":
+        if (!value.trim()) {
+          error = "Name is required";
+        } else if (value.length < 3) {
+          error = "Name must be at least 3 characters";
+        }
+        break;
+      case "email":
+        if (!value) {
+          error = "Email is required";
+        } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+          error = "Please enter a valid email address";
+        }
+        break;
+      case "password":
+        if (!value) {
+          error = "Password is required";
+        } else if (value.length < 8) {
+          error = "Password must be at least 8 characters";
+        } else if (!/(?=.*[A-Z])/.test(value)) {
+          error = "Password must contain at least one uppercase letter";
+        } else if (!/(?=.*[0-9])/.test(value)) {
+          error = "Password must contain at least one number";
+        } else if (!/(?=.*[!@#$%^&*])/.test(value)) {
+          error = "Password must contain at least one special character";
+        }
+        break;
+      default:
+        break;
+    }
+    
+    return error;
+  };
+
+  const handleBlur = (e) => {
+    const { name } = e.target;
+    setTouched({ ...touched, [name]: true });
+    
+    const error = validateField(name, userData[name]);
+    setErrors({ ...errors, [name]: error });
+  };
 
   const handleChange = (e) => {
-    setUserData({ ...userData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setUserData({ ...userData, [name]: value });
+    
+    // Validate only if the field has been touched
+    if (touched[name]) {
+      const error = validateField(name, value);
+      setErrors({ ...errors, [name]: error });
+    }
+  };
+
+  const validateForm = () => {
+    const newErrors = {};
+    let isValid = true;
+    
+    Object.keys(userData).forEach((key) => {
+      const error = validateField(key, userData[key]);
+      newErrors[key] = error;
+      if (error) isValid = false;
+    });
+    
+    setErrors(newErrors);
+    setTouched({
+      name: true,
+      email: true,
+      password: true,
+    });
+    
+    return isValid;
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
     
-    let existingUsers = JSON.parse(localStorage.getItem("register")) || [];
-    if (!Array.isArray(existingUsers)) existingUsers = [];
+    if (!validateForm()) {
+      return;
+    }
     
+    // Check if email already exists
+    const existingUsers = JSON.parse(localStorage.getItem("register")) || [];
+    if (existingUsers.some(user => user.email === userData.email)) {
+      setErrors({
+        ...errors,
+        email: "This email is already registered"
+      });
+      return;
+    }
+    
+    // Add new user
     existingUsers.push(userData);
     localStorage.setItem("register", JSON.stringify(existingUsers));
 
@@ -52,7 +147,7 @@ const Signup = () => {
         backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url(${backgroundImage})`,
         backgroundSize: "cover",
         backgroundPosition: "center",
-        backgroundAttachment: "fixed",
+        
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
@@ -95,7 +190,11 @@ const Signup = () => {
                   label="Full Name"
                   fullWidth
                   margin="normal"
+                  value={userData.name}
                   onChange={handleChange}
+                  onBlur={handleBlur}
+                  error={touched.name && !!errors.name}
+                  helperText={touched.name && errors.name}
                   InputProps={{
                     startAdornment: (
                       <InputAdornment position="start">
@@ -125,7 +224,11 @@ const Signup = () => {
                   label="Email"
                   fullWidth
                   margin="normal"
+                  value={userData.email}
                   onChange={handleChange}
+                  onBlur={handleBlur}
+                  error={touched.email && !!errors.email}
+                  helperText={touched.email && errors.email}
                   InputProps={{
                     startAdornment: (
                       <InputAdornment position="start">
@@ -156,7 +259,11 @@ const Signup = () => {
                   type="password"
                   fullWidth
                   margin="normal"
+                  value={userData.password}
                   onChange={handleChange}
+                  onBlur={handleBlur}
+                  error={touched.password && !!errors.password}
+                  helperText={touched.password && errors.password}
                   InputProps={{
                     startAdornment: (
                       <InputAdornment position="start">
@@ -185,6 +292,8 @@ const Signup = () => {
                   type="submit"
                   variant="contained"
                   fullWidth
+                  disabled={Object.values(errors).some(error => error) || 
+                            Object.values(userData).some(value => !value)}
                   sx={{
                     py: 1.5,
                     borderRadius: 2,
@@ -197,6 +306,10 @@ const Signup = () => {
                       background: "linear-gradient(45deg, #D4AC0D, #E69500)",
                       boxShadow: "0 6px 20px rgba(241, 196, 15, 0.4)",
                     },
+                    "&:disabled": {
+                      background: "rgba(255, 255, 255, 0.12)",
+                      color: "rgba(255, 255, 255, 0.3)",
+                    }
                   }}
                   endIcon={<ArrowForward />}
                 >
