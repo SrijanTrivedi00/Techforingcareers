@@ -1,3 +1,9 @@
+:root {
+  --primary-bg: #282c34;
+  --link-color: #61dafb;
+  --text-color: white;
+}
+
 .App {
   text-align: center;
 }
@@ -5,34 +11,72 @@
 .App-logo {
   height: 40vmin;
   pointer-events: none;
+  /* Smooth scaling for the logo */
+  max-height: 100%;
+  width: auto;
 }
 
+/* Animation only when motion is allowed */
 @media (prefers-reduced-motion: no-preference) {
   .App-logo {
     animation: App-logo-spin infinite 20s linear;
   }
 }
 
+/* Reduced motion alternative */
+@media (prefers-reduced-motion: reduce) {
+  .App-logo {
+    animation: none;
+  }
+}
+
 .App-header {
-  background-color: #282c34;
+  background-color: var(--primary-bg);
   min-height: 100vh;
+  min-height: 100dvh; /* Fallback for modern browsers */
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+  font-size: clamp(1rem, calc(10px + 2vmin), 2rem); /* Responsive font with limits */
+  color: var(--text-color);
+  /* Better text rendering */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 .App-link {
-  color: #61dafb;
+  color: var(--link-color);
+  /* Smooth color transition for interaction */
+  transition: color 0.2s ease;
 }
 
+.App-link:hover,
+.App-link:focus {
+  color: color-mix(in srgb, var(--link-color), white 20%);
+  text-decoration: underline;
+  outline: none;
+}
+
+/* Keyframes at the bottom for better organization */
 @keyframes App-logo-spin {
   from {
     transform: rotate(0deg);
   }
   to {
     transform: rotate(360deg);
+  }
+}
+
+/* Print styles */
+@media print {
+  .App-header {
+    min-height: auto;
+    padding: 2cm;
+  }
+  
+  .App-logo {
+    height: 150px;
+    animation: none !important;
   }
 }

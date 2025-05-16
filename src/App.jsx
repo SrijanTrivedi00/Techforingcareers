@@ -2,15 +2,15 @@
 
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
-import PrivateRoute from "./components/PrivateRoute";
-import JobList from "./pages/JobList";
-import RedirectRoute from "./components/RedirectRoutes";
-import JobForm from "./components/JobForm";
+import PrivateRoute from "./Uitility/PrivateRoute";
+import JobList from "./components/JobList";
+import RedirectRoute from "./Uitility/RedirectRoutes";
+import JobForm from "./Uitility/JobForm";
 import { JobProvider } from "./context/JobContext";
-import Navbar from "./components/Navbar";
-import Signup from "./pages/Signup";
-import Login from "./pages/Login";
-import Home from "./pages/Home";
+import Navbar from "./Uitility/Navbar";
+import Signup from "./components/Signup";
+import Login from "./components/Login";
+import Home from "./components/Home";
 
 
 

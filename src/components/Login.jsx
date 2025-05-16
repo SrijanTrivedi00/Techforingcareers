@@ -24,13 +24,30 @@ const Login = () => {
   const [credentials, setCredentials] = useState({ email: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errors, setErrors] = useState({ email: false, password: false });
 
   const handleChange = (e) => {
     setCredentials({ ...credentials, [e.target.name]: e.target.value });
+    // Clear error when user starts typing
+    setErrors({ ...errors, [e.target.name]: false });
+  };
+
+  const validateForm = () => {
+    const newErrors = {
+      email: !credentials.email.trim(),
+      password: !credentials.password.trim()
+    };
+    setErrors(newErrors);
+    return !newErrors.email && !newErrors.password;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    if (!validateForm()) {
+      return;
+    }
+    
     setIsSubmitting(true);
     
     try {
@@ -45,9 +62,10 @@ const Login = () => {
       setIsSubmitting(false);
     }
   };
-  const movetosignup=()=>{
-    navigate("/signup")
-  }
+
+  const movetosignup = () => {
+    navigate("/signup");
+  };
 
   return (
     <Box
@@ -108,7 +126,10 @@ const Login = () => {
                     fullWidth
                     margin="normal"
                     variant="outlined"
+                    value={credentials.email}
                     onChange={handleChange}
+                    error={errors.email}
+                    helperText={errors.email ? "Email is required" : ""}
                     InputProps={{
                       startAdornment: (
                         <InputAdornment position="start">
@@ -140,7 +161,10 @@ const Login = () => {
                     fullWidth
                     margin="normal"
                     variant="outlined"
+                    value={credentials.password}
                     onChange={handleChange}
+                    error={errors.password}
+                    helperText={errors.password ? "Password is required" : ""}
                     InputProps={{
                       startAdornment: (
                         <InputAdornment position="start">

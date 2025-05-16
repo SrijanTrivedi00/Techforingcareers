@@ -40,7 +40,7 @@ const Home = () => {
       {/* Content */}
       <Box sx={{ position: "relative", zIndex: 2, maxWidth: "800px" }}>
         <Typography variant="h2" sx={{ fontWeight: "bold", marginBottom: 3 }}>
-          Welcome to the Job Portal
+          Welcome Back!
         </Typography>
 
         <Button

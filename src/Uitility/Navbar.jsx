@@ -12,110 +12,106 @@ import {
   ListItemButton,
   ListItemText,
 } from "@mui/material";
+import MenuIcon from "@mui/icons-material/Menu";
 import { Link } from "react-router-dom";
-import MenuIcon from "@mui/icons-material/Menu"; 
 import AuthContext from "../context/AuthContext";
-import logo from "../assets/techforing_logo.jpeg"; 
+import logo from "../assets/techforing_logo.jpeg";
 
 const Navbar = () => {
   const { user, logout } = useContext(AuthContext);
   const [mobileOpen, setMobileOpen] = useState(false);
 
-
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
   };
 
-  const navLinks = !user
+  const mainNavLinks = [
+    { text: "Home", path: "/" },
+    { text: "About Us", path: "/about" },
+    { text: "Contact Us", path: "/contact" },
+    { text: "Products", path: "/products" },
+    { text: "Services", path: "/services" },
+  ];
+
+  const authNavLinks = user
     ? [
-        { text: "Login", path: "/login" },
-        { text: "Sign Up", path: "/signup" },
-      ]
-    : [
         { text: "View Jobs", path: "/job" },
         { text: "Create Jobs", path: "/job-create" },
-      ];
+      ]
+    : [];
 
   return (
     <>
-     
       <AppBar
         position="sticky"
         sx={{
-          backgroundColor: "#142052",
-          padding: "10px 0",
+          background: "rgba(7, 55, 99, 0.9)",
+          backdropFilter: "blur(6px)",
           boxShadow: "none",
+          paddingY: 1,
         }}
       >
         <Toolbar
           sx={{
             display: "flex",
-            alignItems: "center",
             justifyContent: "space-between",
             maxWidth: "1200px",
             margin: "0 auto",
             width: "100%",
           }}
         >
-       
+          {/* Logo and Brand */}
           <Box sx={{ display: "flex", alignItems: "center" }}>
             <img
               src={logo}
               alt="Techforing Logo"
               style={{ height: 45, marginRight: 12, borderRadius: "8px" }}
             />
-            <Box>
-              <Typography
-                variant="h6"
-                component={Link}
-                to="/"
-                sx={{
-                  fontWeight: "bold",
-                  color: "white",
-                  lineHeight: 1,
-                  textDecoration: "none",
-                  "&:hover": { color: "#f8b400" },
-                }}
-              >
-                TechForing
-              </Typography>
-              <Typography
-                variant="body2"
-                sx={{ color: "#ddd", fontSize: "12px", marginTop: "2px" }}
-              >
-                Shaping Tomorrow’s Cybersecurity
-              </Typography>
-            </Box>
+            <Typography
+              variant="h6"
+              component={Link}
+              to="/"
+              sx={{
+                fontWeight: "bold",
+                color: "white",
+                textDecoration: "none",
+                "&:hover": { color: "#00b0ff" },
+              }}
+            >
+              TechForing
+            </Typography>
           </Box>
 
-          
-          <Box sx={{ display: { xs: "none", md: "flex" } }}>
-            {navLinks.map((link) => (
+          {/* Desktop Nav */}
+          <Box sx={{ display: { xs: "none", md: "flex" }, alignItems: "center" }}>
+            {[...mainNavLinks, ...authNavLinks].map((link) => (
               <Button
                 key={link.text}
-                color="inherit"
                 component={Link}
                 to={link.path}
                 sx={{
-                  fontWeight: "bold",
-                  transition: "all 0.3s",
-                  "&:hover": { color: "#f8b400" },
+                  color: "white",
+                  fontWeight: 500,
+                  textTransform: "none",
+                  mx: 1,
+                  "&:hover": { color: "#00b0ff" },
                 }}
               >
                 {link.text}
               </Button>
             ))}
+
             {user && (
               <Button
                 onClick={logout}
                 sx={{
-                  backgroundColor: "#f50057",
+                  ml: 2,
+                  backgroundColor: "#ff4081",
                   color: "white",
                   fontWeight: "bold",
-                  ml: 1,
-                  padding: "6px 16px",
-                  borderRadius: "8px",
-                  "&:hover": { backgroundColor: "#d4004d" },
+                  paddingX: 2,
+                  borderRadius: "6px",
+                  "&:hover": { backgroundColor: "#e91e63" },
                 }}
               >
                 Logout
@@ -123,7 +119,7 @@ const Navbar = () => {
             )}
           </Box>
 
-     
+          {/* Mobile Menu Icon */}
           <IconButton
             edge="end"
             color="inherit"
@@ -136,26 +132,30 @@ const Navbar = () => {
         </Toolbar>
       </AppBar>
 
-      
+      {/* Drawer for Mobile */}
       <Drawer
         anchor="right"
         open={mobileOpen}
         onClose={handleDrawerToggle}
         sx={{ display: { xs: "block", md: "none" } }}
       >
-        <Box sx={{ width: 250 }}>
+        <Box sx={{ width: 250, backgroundColor: "#073763", height: "100%" }}>
           <List>
-            {navLinks.map((link) => (
+            {[...mainNavLinks, ...authNavLinks].map((link) => (
               <ListItem key={link.text} disablePadding>
                 <ListItemButton
                   component={Link}
                   to={link.path}
                   onClick={handleDrawerToggle}
                 >
-                  <ListItemText primary={link.text} />
+                  <ListItemText
+                    primary={link.text}
+                    sx={{ color: "white", paddingLeft: 1 }}
+                  />
                 </ListItemButton>
               </ListItem>
             ))}
+
             {user && (
               <ListItem disablePadding>
                 <ListItemButton
@@ -166,7 +166,7 @@ const Navbar = () => {
                 >
                   <ListItemText
                     primary="Logout"
-                    sx={{ color: "#f50057", fontWeight: "bold" }}
+                    sx={{ color: "#ff4081", fontWeight: "bold", paddingLeft: 1 }}
                   />
                 </ListItemButton>
               </ListItem>
