@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import {
   TextField,
   Button,
@@ -8,26 +8,47 @@ import {
   CardContent,
   Box,
 } from "@mui/material";
-import AuthContext from "../context/AuthContext";
-import { useNavigate } from "react-router-dom";
+import JobContext from "../context/JobContext";
+import { useNavigate, useParams } from "react-router-dom";
 import backgroundImage from "../assets/techforing_back.png";
 
-const Login = () => {
-  const { login } = useContext(AuthContext);
+const JobForm = ({ editMode = false }) => {
+  const { addJob, updateJob, getJobById } = useContext(JobContext);
   const navigate = useNavigate();
-  const [credentials, setCredentials] = useState({ email: "", password: "" });
+  const { id } = useParams();
+
+  const [job, setJob] = useState({
+    title: "",
+    description: "",
+    id: Math.random() * 10000,
+  });
+
+  useEffect(() => {
+    if (editMode && id) {
+      const existingJob = getJobById(id);
+      if (existingJob) {
+        setJob(existingJob);
+      }
+    }
+  }, [editMode, id, getJobById]);
 
   const handleChange = (e) => {
-    setCredentials({ ...credentials, [e.target.name]: e.target.value });
+    setJob({ ...job, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    if (login(credentials.email, credentials.password)) {
-      navigate("/");
-    } else {
-      alert("Invalid credentials. Please try again.");
+    if (job.title && job.description) {
+      if (editMode) {
+        updateJob(job);
+      } else {
+        addJob(job);
+        const existingJobs = JSON.parse(localStorage.getItem("jobs")) || [];
+        existingJobs.push(job);
+        localStorage.setItem("jobs", JSON.stringify(existingJobs));
+      }
+      navigate("/job");
     }
   };
 
@@ -51,7 +72,7 @@ const Login = () => {
             padding: 3,
             boxShadow: 6,
             borderRadius: 3,
-            background: "rgba(20, 32, 82, 0.9)",
+            background: "rgba(20, 32, 82, 0.9)", 
             color: "white",
           }}
         >
@@ -62,16 +83,17 @@ const Login = () => {
               gutterBottom
               sx={{ fontWeight: "bold" }}
             >
-              Login
+              {editMode ? "Edit Job" : "Create a Job"}
             </Typography>
 
             <form onSubmit={handleSubmit}>
               <TextField
-                name="email"
-                label="Email"
+                name="title"
+                label="Job Title"
                 fullWidth
                 margin="normal"
                 onChange={handleChange}
+                value={job.title}
                 InputLabelProps={{
                   style: { color: "#ddd" },
                 }}
@@ -86,12 +108,14 @@ const Login = () => {
               />
 
               <TextField
-                name="password"
-                label="Password"
-                type="password"
+                name="description"
+                label="Job Description"
                 fullWidth
+                multiline
+                rows={4}
                 margin="normal"
                 onChange={handleChange}
+                value={job.description}
                 InputLabelProps={{
                   style: { color: "#ddd" },
                 }}
@@ -118,7 +142,7 @@ const Login = () => {
                     },
                   }}
                 >
-                  Login
+                  {editMode ? "Update Job" : "Add Job"}
                 </Button>
               </Box>
             </form>
@@ -129,4 +153,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default JobForm;
